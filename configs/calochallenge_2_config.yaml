@@ -1,0 +1,66 @@
+data:
+  base_path: "/home/schnakes/beegfs/calochallenge_data/"
+  energy_key: "incident_energies"
+  shower_key: "showers"
+  train: "dataset_2_1"
+  val: "dataset_2_2"
+
+pointcloud:
+  dims: [45, 16, 9]
+  means: [0.3767, 0., 0., 2.7745]
+  stds: [0.2225, 0.3452, 0.3452, 1.8092]
+  spherical: true
+  n_hat_mean: 5.0481
+  n_hat_std: 1.1581
+
+  e_hat_mean: 0.7840
+  e_hat_std: 0.1129
+
+  e_in_width: 6.9
+  e_in_shift: 2.0
+
+model:
+  num_workers: 160
+  batch_size: 256
+  lr: 1e-3
+  max_size: 256_000
+
+encoder:
+  in_features: 4
+  latent_dim: 126
+  point_layers: [8, 16, 32, 64, 128]
+  latent_layers: [128, 128, 128]
+
+
+latent_flow:
+  features: 128
+  n_transforms: 4
+  tail_bound: 5.
+  num_bins: 8
+  context_features: 1
+  context_hidden_features: 32
+  hidden_features: 64
+  num_blocks: 2
+
+
+point_flow:
+  features: 4
+  n_transforms: 8
+  tail_bound: 6.
+  num_bins: 8
+  context_features: 128
+  context_hidden_features: 64
+  hidden_features: 64
+  num_blocks: 2
+  
+
+trainer:
+  accelerator: "gpu"
+  devices: -1
+  max_epochs: 1000
+  #detect_anomaly: true
+  strategy: "ddp"
+  log_every_n_steps: 5
+  num_sanity_val_steps: 0
+  # accumulate_grad_batches: 128
+  # profiler: "simple"

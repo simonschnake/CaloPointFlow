@@ -1,0 +1,29 @@
+
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "CaloHitFlow"
+version = "0.0.0"
+description = "Generating calorimeter showers hit by hit"
+readme = "README.md"
+authors = [{ name = "Simon Schnake", email = "author_last_name.author_first_name@gmail.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["Deep Learning", "Bayesian Inference", "Statistical Modeling", "Variational Inference", "PyTorch", "Normalizing Flows"]
+dependencies = ["torch", 'tomli; python_version < "3.11"']
+requires-python = ">=3.9"
+
+    [project.optional-dependencies]
+    dev   = ["black", "isort", "mypy", "pytest"]
+
+    [project.scripts]
+    calohitflow-train = "calohitflow.__main__:train"    
+
+    [project.urls]
+    repository    = "https://github.com/"
