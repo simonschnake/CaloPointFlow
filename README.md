@@ -65,14 +65,4 @@ This project is licensed under the MIT License - see the `LICENSE` file for deta
 
 ## Acknowledgements
 
-- Authors and contributors of the CaloPointFlow project for their foundational work.
 - Fast Calorimeter Simulation Challenge (CaloChallenge) for providing the datasets.
-
-For more information, please refer to the official documentation and papers linked in the `docs/` directory.
-
----
-
-Note: Adjust the repository URL, licensing, and any specific installation or usage instructions according to the actual project details.
-
-
-
