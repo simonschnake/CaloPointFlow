@@ -1,0 +1,42 @@
+dataset:
+  binning:
+    z_bins : 45
+    alpha_bins : 16
+    r_bins : 9 
+
+point_dim: 4
+latent_dim: 128
+conditional_dim: 2
+deepset_flow: False
+cdf_dequantization: False
+without_alpha: False
+
+point_flow:
+  bins: 8
+  transforms: 12
+  randmask: true
+  hidden_features: [128, 128, 128]
+  #point_net_dims: [64, 128, 512]
+  #reduce_net_dims: [512, 256, 128]
+  #reduce: "mean"
+
+latent_flow:
+  bins: 8
+  transforms: 8
+  randmask: true
+  hidden_features: [1024, 1024, 1024]
+
+conditional_flow:
+  bins: 12
+  transforms: 12
+  randperm: true
+  hidden_features: [128, 128, 128]
+
+encoder:
+  point_layers: [64, 128, 1024]
+  latent_layers: [1024, 512, 512]
+
+data:
+  data_dir: "/beegfs/desy/user/schnakes/calochallenge_data"
+  batch_size: 256
+  num_workers: 40 

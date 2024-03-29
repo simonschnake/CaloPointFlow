@@ -1,0 +1,48 @@
+point_dim: 3
+latent_dim: 5
+conditional_dim: 2
+
+point_flow:
+  bins: 12
+  transforms: 8
+  randmask: true
+  hidden_features: [128, 128, 128]
+  #point_net_dims: [12, 32, 64, 128]
+  #reduce_net_dims: [64, 32, 16]
+  #reduce: "mean"
+
+latent_flow:
+  bins: 8
+  transforms: 8
+  randmask: true
+  hidden_features: [64, 64, 64]
+
+conditional_flow:
+  bins: 12
+  transforms: 12
+  randperm: true
+  hidden_features: [128, 128, 128]
+
+encoder:
+  point_layers: [8, 16, 32, 64]
+  latent_layers: [64, 32, 16]
+
+data:
+  data_dir: "/beegfs/desy/user/schnakes/calochallenge_data"
+  batch_size: 64
+  num_workers: 128 
+
+trainer:
+  accelerator: "gpu"
+  devices: 1
+  max_epochs: 1000
+  # detect_anomaly: true
+  #strategy: "ddp_find_unused_parameters_false"
+  # log_every_n_steps: 5
+  # num_sanity_val_steps": 0
+  # precision: "16-mixed"
+  # accumulate_grad_batches: 4
+  # profiler: "simple"
+
+optimizer:
+  lr: 0.001
