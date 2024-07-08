@@ -13,13 +13,7 @@ In particle physics experiments, simulating calorimeter showers is computational
 
 ## Getting Started
 
-### Prerequisites
-
-Before you begin, ensure you have the following installed:
-- Python 3.8 or later
-- PyTorch 1.8 or later
-- Other dependencies listed in `requirements.txt`
-
+    
 ### Installation
 
 1. Clone the repository:
