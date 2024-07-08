@@ -40,3 +40,4 @@ data:
   data_dir: "/beegfs/desy/user/schnakes/calochallenge_data"
   batch_size: 256
   num_workers: 40 
+

@@ -1,16 +1,14 @@
 dataset:
   binning:
     z_bins : 45
-    alpha_bins : 50
-    r_bins : 18 
+    alpha_bins : 16
+    r_bins : 9 
 
 point_dim: 3
 latent_dim: 128
 conditional_dim: 2
 deepset_flow: true
-cdf_dequantization: true
-without_alpha: False
-shift_min_energy: false
+cdf_dequantization: false
 
 point_flow:
   bins: 8
@@ -38,6 +36,4 @@ encoder:
   latent_layers: [1024, 512, 512]
 
 data:
-  data_dir: "/beegfs/desy/user/schnakes/calochallenge_data"
-  batch_size: 64
-  num_workers: 40 
+  batch_size: 256

@@ -1,8 +1,8 @@
 from torch import nn
 from torch import Tensor
 
-from calopointflow.modules.linear import Linear
 from calopointflow.modules.deep_sets import DeepSetModule
+
 
 class Encoder(DeepSetModule):
     """The encoder part of the CaloPointFlow.
@@ -28,18 +28,18 @@ class Encoder(DeepSetModule):
         point_transformation_layers = []
 
         for features in point_layers: 
-            point_transformation_layers.append(Linear(prev_features, features))
+            point_transformation_layers.append(nn.Linear(prev_features, features))
             point_transformation_layers.append(nn.GELU())
             prev_features = features
 
-        point_transformation_layers.append(Linear(prev_features, prev_features))
+        point_transformation_layers.append(nn.Linear(prev_features, prev_features))
 
         self.point_encoding = prev_features
 
         latent_transformation_layers = []
 
         for features in latent_layers:
-            latent_transformation_layers.append(Linear(prev_features, features))
+            latent_transformation_layers.append(nn.Linear(prev_features, features))
             latent_transformation_layers.append(nn.GELU())
             prev_features = features
 
@@ -49,8 +49,8 @@ class Encoder(DeepSetModule):
             reduce=reduce
         )
 
-        self.mu_mapping = Linear(prev_features, latent_dim)
-        self.logvar_mapping = Linear(prev_features, latent_dim)
+        self.mu_mapping = nn.Linear(prev_features, latent_dim)
+        self.logvar_mapping = nn.Linear(prev_features, latent_dim)
 
     def forward(self, points: Tensor, idx: Tensor) -> tuple[Tensor, Tensor]:
         """

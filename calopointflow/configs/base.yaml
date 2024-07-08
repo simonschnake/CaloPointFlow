@@ -1,6 +1,7 @@
 point_dim: 3
 latent_dim: 5
 conditional_dim: 2
+shift_min_energy: false
 
 point_flow:
   bins: 12
@@ -28,14 +29,17 @@ encoder:
   latent_layers: [64, 32, 16]
 
 data:
+  #data_dir: "/dev/shm/schnakes/datasets"
   data_dir: "/beegfs/desy/user/schnakes/calochallenge_data"
   batch_size: 64
-  num_workers: 128 
+  num_workers: -1
+  point_cloud: true
+  #debug: true
 
 trainer:
   accelerator: "gpu"
   devices: 1
-  max_epochs: 1000
+  max_epochs: 100
   # detect_anomaly: true
   #strategy: "ddp_find_unused_parameters_false"
   # log_every_n_steps: 5
@@ -46,3 +50,8 @@ trainer:
 
 optimizer:
   lr: 0.001
+
+generate:
+  dataset_size: 100_000
+  save_dataset: true
+  batch_size: 1_000

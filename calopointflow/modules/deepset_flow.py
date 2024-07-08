@@ -1,15 +1,20 @@
 import torch
 from torch import Tensor, Size, LongTensor
-from zuko.flows import GeneralCouplingTransform, Unconditional, LazyComposedTransform, LazyDistribution
-from zuko.distributions import DiagNormal, NormalizingFlow
-from zuko.transforms import Transform, CouplingTransform, ComposedTransform, \
-    MonotonicRQSTransform, MonotonicAffineTransform
-from zuko.nn import MLP
-from zuko.utils import broadcast
 from typing import Sequence, Callable
 from functools import partial
 
-from calopointflow.modules.deep_sets import DeepSetModule
+from zuko.flows import GeneralCouplingTransform, Unconditional, LazyDistribution, LazyComposedTransform
+from zuko.distributions import DiagNormal, NormalizingFlow
+from zuko.transforms import Transform, CouplingTransform, \
+    MonotonicRQSTransform, MonotonicAffineTransform, ComposedTransform
+from zuko.nn import MLP
+from zuko.utils import broadcast
+
+from .deep_sets import DeepSetModule
+
+class LazyComposedSetTransform(LazyComposedTransform):
+    def forward(self, idx: LongTensor, nnz: LongTensor, c: Tensor) -> Transform:
+        return ComposedTransform(*(t(idx, nnz, c) for t in self.transforms))
 
 class DeepSetTransform(GeneralCouplingTransform):
     def __init__(
@@ -59,9 +64,6 @@ class DeepSetTransform(GeneralCouplingTransform):
     def forward(self, idx: LongTensor, nnz: LongTensor, c: Tensor) -> Tensor:
         return CouplingTransform(partial(self.meta, idx, nnz, c), self.mask)
 
-class LazyComposedSetTransform(LazyComposedTransform):
-    def forward(self, idx: LongTensor, nnz: LongTensor, c: Tensor) -> Transform:
-        return ComposedTransform(*(t(idx, nnz, c) for t in self.transforms))
 
 class DeepSetFlow(LazyDistribution):
     def __init__(

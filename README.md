@@ -29,35 +29,95 @@ git clone https://github.com/simonschnake/CaloPointFlow.git
 cd CaloPointFlow
 ```
 
-2. Install the required Python packages:
+2. Install the required Python packages, we use `python 3.10.5` and `pip` :
 
 ```bash
+python3.10 -m venv venv
+source venv/bin/activate
+pip install torch==2.2.2 torchvision==0.17.2 torchaudio==2.2.2 --index-url https://download.pytorch.org/whl/cu121
+pip install torch-scatter -f https://data.pyg.org/whl/torch-2.2.2%2Bcu121.html
+pip install click==8.1.7 zuko==1.1.0 tqdm==4.66.4 omegaconf==2.3.0 numba-0.59.1 pytorch-lightning==2.3.2 matplotlib==3.9.1 h5py==3.11.0 scipy==1.14.0 mplhep==0.3.50 tensorboardX==2.6.2.2
 pip install .
 ```
 
 ### Usage
 
-To start using CaloPointFlow II, follow these steps:
-
-1. Prepare your dataset according to the guidelines provided in the `data/` directory.
-2. Adjust the configuration settings in `config.json` as needed.
-3. Train the model using:
-
+To train the model use
 ```bash
-python train.py --config config.json
+calopointflow train --help
+
+Usage: calopointflow train [OPTIONS] [KWARGS]...
+
+Options:
+  -m, --model TEXT       Model to use. Options: I, dsf, dsf_cdeq, II
+                         [required]
+  -d, --dataset INTEGER  Dataset to use. Options: 2, 3  [required]
+  -ld, --log_dir TEXT    Path to save the logs  [required]
+  --help                 Show this message and exit.
 ```
 
-4. Evaluate the model with:
+To generate new data use
 
 ```bash
-python evaluate.py --checkpoint path/to/your/model.ckpt
+calopointflow generate --help
+
+Usage: calopointflow generate [OPTIONS] [KWARGS]...
+
+Options:
+  -m, --model TEXT       Model to use. Options: I, dsf, dsf_cdeq, II
+                         [required]
+  -d, --dataset INTEGER  Dataset to use. Options: 2, 3  [required]
+  --ckpt_path TEXT       Path to the model checkpoint file  [required]
+  --save_path TEXT       Path to save the generated data  [required]
+  --help                 Show this message and exit.
 ```
 
-Refer to the `examples/` directory for more detailed usage examples.
+To plot the histograms
 
-## Contributing
+```bash
+ calopointflow plot --help
 
-Contributions to CaloPointFlow II are welcome! Please read `CONTRIBUTING.md` for details on our code of conduct and the process for submitting pull requests.
+Usage: calopointflow plot [OPTIONS]
+
+Options:
+  -d, --dataset INTEGER           Dataset to use. Options: 2, 3  [required]
+  -p, --plot TEXT                 What to plot.
+                                  
+                                  Options:
+                                  
+                                    all: Plot all available plots
+                                  
+                                    marginals: Plot the marginal distributions
+                                    of the data in the z, alpha, and r
+                                    dimensions
+                                  
+                                    layer_energies: Plot the energy
+                                    distributions of the data in individual
+                                    layer areas
+                                  
+                                    corrcoeff: Plot the correlation
+                                    coefficients between the data in the z,
+                                    alpha, and r dimensions
+                                  
+                                    cov_eigenvalues: Plot the histograms of
+                                    eigenvalues of the covariance matrices of
+                                    the individual showers
+                                  
+                                    means: Plot the shower means in the z,
+                                    alpha, and r dimensions
+                                  
+                                    cell_energies: Plot the energy
+                                    distributions of the data in individual
+                                    cells
+                                  
+                                    num_hits: Plot the histogram of number of
+                                    hits
+  --save_path TEXT                Path to save the plots
+  -g4, --geant4_data TEXT         Path to the Geant4 data  [required]
+  -cpf, --calopointflow_data TEXT
+                                  Path to the CaloPointFlow data  [required]
+  --help                          Show this message and exit.
+```
 
 ## License
 

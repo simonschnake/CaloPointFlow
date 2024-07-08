@@ -1,6 +1,6 @@
 from torch import nn, Tensor, LongTensor
-#from calopointflow.utils import scatter
 from torch_scatter import scatter
+
 
 class DeepSetModule(nn.Module):
     def __init__(

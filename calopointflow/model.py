@@ -1,20 +1,17 @@
-import argparse
 from typing import Any
 from pytorch_lightning.utilities.types import STEP_OUTPUT
 
 from zuko.flows import NSF
 
 import torch
+from torch_scatter import scatter
 from torch import Tensor
-from omegaconf import OmegaConf, DictConfig
-import pytorch_lightning as pl
+from omegaconf import DictConfig
 
-
-from calopointflow.data import CaloDataModule2, CaloDataModule3 
 from calopointflow.freezables import FreezeModule, Dequantization, CDFDequantization, Normalize, MinMaxScale
-from calopointflow.modules import Encoder, NeuralSplineCouplingFlow, DeepSetFlow
-from calopointflow.utils import load_config, logistic_quantile, logistic_cdf, scatter, normal_cdf, normal_quantile
+from calopointflow.utils import logistic_quantile, normal_quantile, logistic_cdf, normal_cdf
 
+from .modules import Encoder, NeuralSplineCouplingFlow, DeepSetFlow
 
 class CaloPointFlow(FreezeModule):
     def __init__(
@@ -90,6 +87,10 @@ class CaloPointFlow(FreezeModule):
         coords, vals, nnz, e_in = batch
 
         idx = torch.repeat_interleave(torch.arange(len(nnz), device=nnz.device), nnz)
+
+        # hardcoded substract the minimum energy in the dataset () 
+        if self.config.shift_min_energy:
+            vals -= 0.5e-3/0.033
 
         # calculate e_sum
         e_sum = scatter(vals, idx, reduce='sum') 
@@ -210,8 +211,6 @@ class CaloPointFlow(FreezeModule):
                 torch.sin(alpha) * r / 2 + 0.5,
             ], dim=-1)
 
-
-
         if self.config.cdf_dequantization:
             coords = normal_quantile(coords)
         else:
@@ -284,52 +283,3 @@ class CaloPointFlow(FreezeModule):
         e_in = torch.log(e_in)
         e_in = self.normalize_e_in(e_in)
         return e_in
-
-def train(model: str) -> None:
-
-    dataset = f"dataset_{model[1]}"
-
-    base_cfg = load_config("base")
-    dataset_cfg = load_config(model)
-    cfg = OmegaConf.merge(base_cfg, dataset_cfg)
-    cli_cfg = OmegaConf.from_cli()
-    cfg = OmegaConf.merge(cfg, cli_cfg)
-
-    calo_point_flow = CaloPointFlow(cfg)
-
-    if dataset == "dataset_2":
-        calo_data = CaloDataModule2(**cfg.data)
-    elif dataset == "dataset_3":
-        calo_data = CaloDataModule3(**cfg.data)
-    else:
-        raise NameError(f"Unknown dataset {dataset}")
-
-    logger = pl.loggers.TensorBoardLogger(
-        save_dir=f"/beegfs/desy/user/schnakes/calopointflow_logs/{model}/")
-    trainer = pl.Trainer(
-        devices = 1,
-        max_epochs=1000,
-        callbacks=[
-            pl.callbacks.EarlyStopping(monitor="val_loss", mode="min", min_delta=0.00, patience=100),
-            pl.callbacks.ModelCheckpoint(
-                monitor="val_loss", mode="min", save_last=True, save_top_k=3, 
-                filename='{epoch}-{val_loss:.4f}')
-        ],
-        logger=logger,
-        
-        gradient_clip_val=0.5, gradient_clip_algorithm="norm",
-        #strategy="ddp_find_unused_parameters_false"
-    )
-
-    trainer.fit(calo_point_flow, calo_data)
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='CaloPointFlow')
-    parser.add_argument(
-        '--model', '-m', type=str, default="d2_I", 
-        help='model versioned to train Options: d2_I, d2_dsf, d2_dsf_cdeq, d2_II, d3_I, d3_dsf, d3_dsf_cdeq, d3_II'
-    )
-
-    args = parser.parse_args()
-
-    train(model=args.model)

@@ -1,7 +1,0 @@
-dataset: 3
-batch_size: 1
-dataset_size: 100_000
-save_dataset: True
-point_dim: 3
-deepset_flow: True
-cdf_dequantization: True
